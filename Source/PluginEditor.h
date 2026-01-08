@@ -23,6 +23,7 @@ public:
 
     void paint (juce::Graphics&) override;
     void resized() override;
+    void applyUISizeFromWeb (int width, int height);
 
 private:
     class WebViewWithCallback : public juce::WebBrowserComponent
@@ -48,9 +49,10 @@ private:
     juce::File uiTempDir;       // <<< FIX: add this
     juce::File uiTempHtmlFile;
 
-    static constexpr size_t kNumParams = 7;
+    static constexpr size_t kNumParams = 8;
     std::array<float, kNumParams> lastSent {};
     bool pageReady = false;
+    juce::Point<int> lastUISize { 0, 0 };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AuricClipperWebViewAudioProcessorEditor)
 };

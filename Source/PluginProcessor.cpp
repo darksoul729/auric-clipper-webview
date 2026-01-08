@@ -17,7 +17,7 @@ AuricClipperWebViewAudioProcessor::AuricClipperWebViewAudioProcessor()
     driveParam   = apvts.getRawParameterValue ("drive");
     ceilingParam = apvts.getRawParameterValue ("ceiling");
 
-    // SINGLE toggle: dipakai sebagai POWER/BYPASS (UI kamu pakai data-param="os2x")
+    powerParam   = apvts.getRawParameterValue ("power");
     os2xParam    = apvts.getRawParameterValue ("os2x");
 }
 
@@ -196,14 +196,13 @@ void AuricClipperWebViewAudioProcessor::processBlock (juce::AudioBuffer<float>& 
     const float drive01   = driveParam   ? driveParam->load()   : 0.50f;
     const float ceiling01 = ceilingParam ? ceilingParam->load() : 0.70f;
 
-    // os2x dipakai sebagai POWER/BYPASS (sesuai UI kamu sekarang)
-    const bool powerOn = os2xParam ? (os2xParam->load() >= 0.5f) : false;
+    const bool powerOn = powerParam ? (powerParam->load() >= 0.5f) : true;
+    const bool os2xOn  = os2xParam  ? (os2xParam->load()  >= 0.5f) : false;
 
     if (! powerOn)
         return; // bypass
 
-    // kalau powerOn = true, proses dengan oversampling (enable = true)
-    clipBufferInPlace (buffer, pre01, drive01, sat01, ceiling01, mix01, trim01, true);
+    clipBufferInPlace (buffer, pre01, drive01, sat01, ceiling01, mix01, trim01, os2xOn);
 }
 
 //==============================================================================
@@ -252,8 +251,8 @@ AuricClipperWebViewAudioProcessor::createParameterLayout()
     layout.add (std::make_unique<APF> ("drive",   "DRIVE",    juce::NormalisableRange<float> (0.0f, 1.0f), 0.50f));
     layout.add (std::make_unique<APF> ("ceiling", "CEILING",  juce::NormalisableRange<float> (0.0f, 1.0f), 0.70f));
 
-    // SINGLE toggle (host akan lihat sebagai POWER; id tetap "os2x" biar match UI)
-    layout.add (std::make_unique<APB> ("os2x", "POWER", false));
+    layout.add (std::make_unique<APB> ("power", "POWER", true));
+    layout.add (std::make_unique<APB> ("os2x", "2X", false));
 
     return layout;
 }
@@ -264,7 +263,8 @@ void AuricClipperWebViewAudioProcessor::setParameterFromNormalized (const juce::
     if (auto* p = apvts.getParameter (paramId))
     {
         const bool treatAsToggle =
-            (paramId == "os2x" || dynamic_cast<juce::AudioParameterBool*> (p) != nullptr);
+            (paramId == "power" || paramId == "os2x"
+             || dynamic_cast<juce::AudioParameterBool*> (p) != nullptr);
 
         const float v = treatAsToggle
                           ? ((normalized01 >= 0.5f) ? 1.0f : 0.0f)
@@ -295,13 +295,36 @@ void AuricClipperWebViewAudioProcessor::handleWebMessage (const juce::var& paylo
         return;
 
     const auto type = dyn->getProperty ("type").toString();
-    if (type != "param")
+    if (type == "param")
+    {
+        const auto id = dyn->getProperty ("id").toString();
+        const float value = (float) dyn->getProperty ("value");
+        setParameterFromNormalized (id, value);
         return;
+    }
 
-    const auto id = dyn->getProperty ("id").toString();
-    const float value = (float) dyn->getProperty ("value");
+    if (type == "uiSize")
+    {
+        const int width  = (int) dyn->getProperty ("width");
+        const int height = (int) dyn->getProperty ("height");
 
-    setParameterFromNormalized (id, value);
+        if (auto* editor = dynamic_cast<AuricClipperWebViewAudioProcessorEditor*> (getActiveEditor()))
+        {
+            if (juce::MessageManager::getInstance()->isThisTheMessageThread())
+            {
+                editor->applyUISizeFromWeb (width, height);
+            }
+            else
+            {
+                juce::Component::SafePointer<AuricClipperWebViewAudioProcessorEditor> safeEditor (editor);
+                juce::MessageManager::callAsync ([safeEditor, width, height]()
+                {
+                    if (safeEditor != nullptr)
+                        safeEditor->applyUISizeFromWeb (width, height);
+                });
+            }
+        }
+    }
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

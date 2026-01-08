@@ -84,6 +84,7 @@ private:
     std::atomic<float>* mixParam     = nullptr;
     std::atomic<float>* driveParam   = nullptr;
     std::atomic<float>* ceilingParam = nullptr;
+    std::atomic<float>* powerParam   = nullptr;
     std::atomic<float>* os2xParam    = nullptr;
 
     juce::AudioBuffer<float> dryBuffer; // untuk mix (preallocated)

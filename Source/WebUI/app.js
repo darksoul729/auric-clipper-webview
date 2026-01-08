@@ -1,30 +1,31 @@
-// Auric Z-CLIP WebUI — app.js
-// FIX: os2x toggle ONLY on purple LED (.led). 2X is NOT a toggle.
+// Auric Z-CLIP WebUI - app.js
 
 (() => {
-  const PARAMS = new Set(["pre","trim","satclip","mix","drive","ceiling","os2x"]);
-  const DEFAULTS = { pre:0.35, trim:0.35, satclip:0.5, mix:1.0, drive:0.5, ceiling:0.7, os2x:0 };
+  const PARAMS = new Set(["pre","trim","satclip","mix","drive","ceiling","os2x","power"]);
+  const DEFAULTS = { pre:0.35, trim:0.35, satclip:0.5, mix:1.0, drive:0.5, ceiling:0.7, os2x:0, power:1 };
 
   const clamp01 = (v) => Math.min(1, Math.max(0, v));
   const valueToDeg = (v) => -135 + v * 270;
-  const quantizeOs2x = (v) => (v >= 0.5 ? 1 : 0);
+  const quantizeToggle = (v) => (v >= 0.5 ? 1 : 0);
 
   // Queue host calls if __setParam comes before DOM ready
   const __hostQueue = [];
   const __earlySetParam = (id, value) => { __hostQueue.push([id, value]); };
   if (typeof window.__setParam !== "function") window.__setParam = __earlySetParam;
 
-  const postParam = (id, value) => {
+  const postEvent = (data) => {
     try {
       if (window.juce && typeof window.juce.postMessage === "function") {
-        window.juce.postMessage(JSON.stringify({ type: "param", id, value }));
+        window.juce.postMessage(JSON.stringify(data));
       }
     } catch {}
   };
 
+  const postParam = (id, value) => postEvent({ type: "param", id, value });
+
   const boot = () => {
     // Initial UI state (host overrides via __setParam)
-    const state = { pre:0.5, trim:0.5, satclip:0.5, mix:0.5, drive:0.5, ceiling:0.5, os2x:0 };
+    const state = { pre:0.5, trim:0.5, satclip:0.5, mix:0.5, drive:0.5, ceiling:0.5, os2x:0, power:1 };
 
     const knobEls = {};
     document.querySelectorAll(".small-knob, .drive-knob").forEach((el) => {
@@ -34,7 +35,8 @@
 
     const sliderTrack = document.querySelector(".slider-track");
     const sliderThumb = document.querySelector(".slider-thumb");
-    const led = document.querySelector('.led[data-param="os2x"]');
+    const led = document.querySelector('.led[data-param="power"]');
+    const btn2x = document.getElementById("btn-2x");
 
     const applyPowerClass = (on) => {
       const root = document.documentElement;
@@ -61,25 +63,33 @@
       sliderThumb.style.left = `${x}px`;
     };
 
-    const applyLed = (value) => {
+    const applyPower = (value) => {
       const on = value >= 0.5;
       if (led) led.classList.toggle("isOn", on);
       applyPowerClass(on);
     };
 
+    const applyOs2x = (value) => {
+      const on = value >= 0.5;
+      if (btn2x) btn2x.classList.toggle("isOn", on);
+    };
+
     const applyParam = (id, value) => {
       if (!PARAMS.has(id)) return;
-      const v = id === "os2x" ? quantizeOs2x(value) : clamp01(value);
+      const isToggle = id === "os2x" || id === "power";
+      const v = isToggle ? quantizeToggle(value) : clamp01(value);
       state[id] = v;
 
       if (id === "ceiling") { applySlider(v); return; }
-      if (id === "os2x")    { applyLed(v);    return; }
+      if (id === "power")   { applyPower(v);  return; }
+      if (id === "os2x")    { applyOs2x(v);   return; }
       applyKnob(id, v);
     };
 
     const setParam = (id, value, fromHost = false) => {
       if (!PARAMS.has(id)) return;
-      const v = id === "os2x" ? quantizeOs2x(value) : clamp01(value);
+      const isToggle = id === "os2x" || id === "power";
+      const v = isToggle ? quantizeToggle(value) : clamp01(value);
 
       applyParam(id, v);
       if (!fromHost) postParam(id, v);
@@ -184,29 +194,36 @@
       sliderThumb.addEventListener("pointerdown", startSlider, { passive:false });
     }
 
-    // ===== LED ONLY (os2x) =====
-    const toggleOs2x = () => {
-      const next = quantizeOs2x((state.os2x ?? 0) >= 0.5 ? 0 : 1);
-      state.os2x = next;
-      applyLed(next); // instant feedback
-      postParam("os2x", next);
+    // ===== TOGGLES =====
+    const togglePower = () => {
+      const next = quantizeToggle((state.power ?? 1) >= 0.5 ? 0 : 1);
+      setParam("power", next, false);
     };
 
-    if (led) {
-      led.addEventListener("pointerdown", (e) => {
+    const toggleOs2x = () => {
+      const next = quantizeToggle((state.os2x ?? 0) >= 0.5 ? 0 : 1);
+      setParam("os2x", next, false);
+    };
+
+    const bindToggle = (el, handler) => {
+      if (!el) return;
+      el.addEventListener("pointerdown", (e) => {
         if (e.pointerType === "mouse" && e.button !== 0) return;
 
         e.preventDefault();
         e.stopPropagation();
 
-        led.classList.add("isPressed");
-        toggleOs2x();
+        el.classList.add("isPressed");
+        handler();
       }, { passive:false });
 
-      led.addEventListener("pointerup", () => { led.classList.remove("isPressed"); }, { passive:true });
-      led.addEventListener("pointercancel", () => { led.classList.remove("isPressed"); }, { passive:true });
-      led.addEventListener("lostpointercapture", () => { led.classList.remove("isPressed"); }, { passive:true });
-    }
+      el.addEventListener("pointerup", () => { el.classList.remove("isPressed"); }, { passive:true });
+      el.addEventListener("pointercancel", () => { el.classList.remove("isPressed"); }, { passive:true });
+      el.addEventListener("lostpointercapture", () => { el.classList.remove("isPressed"); }, { passive:true });
+    };
+
+    bindToggle(led, togglePower);
+    bindToggle(btn2x, toggleOs2x);
 
     // ===== Host -> UI =====
     window.__setParam = (id, value) => {
@@ -227,13 +244,33 @@
       Object.keys(state).forEach((id) => applyParam(id, state[id]));
     };
 
-    window.addEventListener("resize", refreshUI);
+    let lastUISize = { w: 0, h: 0 };
+    const reportUISize = () => {
+      const root = document.querySelector(".plugin-interface");
+      if (!root) return;
+      const rect = root.getBoundingClientRect();
+      const w = Math.round(rect.width);
+      const h = Math.round(rect.height);
+      if (!w || !h) return;
+      if (w === lastUISize.w && h === lastUISize.h) return;
+      lastUISize = { w, h };
+      postEvent({ type: "uiSize", width: w, height: h });
+    };
+
+    window.addEventListener("resize", () => {
+      refreshUI();
+      reportUISize();
+    });
     requestAnimationFrame(() => {
       refreshUI();
-      requestAnimationFrame(refreshUI);
+      reportUISize();
+      requestAnimationFrame(() => {
+        refreshUI();
+        reportUISize();
+      });
     });
 
-    applyPowerClass((state.os2x ?? 0) >= 0.5);
+    applyPowerClass((state.power ?? 1) >= 0.5);
   };
 
   if (document.readyState === "loading") {

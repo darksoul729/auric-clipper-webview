@@ -1,128 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AURIC Z-CLIP</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURIC Z-CLIP Plugin Interface</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <div class="panel">
-    <div class="grain"></div>
 
-    <!-- Screws -->
-    <div class="screw top-left"></div>
-    <div class="screw top-right"></div>
-    <div class="screw bottom-left"></div>
-    <div class="screw bottom-right"></div>
+    <main class="plugin-interface">
 
-    <!-- Header -->
-    <div id="auric" class="header">AURIC</div>
-    <div id="zclip" class="header">Z-CLIP</div>
+        <div class="screw top-left"></div>
+        <div class="screw top-right"></div>
+        <div class="screw bottom-left"></div>
+        <div class="screw bottom-right"></div>
 
-    <!-- Knobs -->
-    <div id="pre-group" class="knob-group">
-      <div class="knob-label">PRE</div>
-      <div class="knob-stack">
-        <div class="tick-ring"></div>
-        <div class="small-knob" data-param="pre"></div>
-      </div>
-    </div>
+        <header class="plugin-header">
+            <h1 class="brand-text">AURIC</h1>
+            <h1 class="model-text">Z-CLIP</h1>
+        </header>
 
-    <div id="trim-group" class="knob-group">
-      <div class="knob-label">TRIM</div>
-      <div class="knob-stack">
-        <div class="tick-ring"></div>
-        <div class="small-knob" data-param="trim"></div>
-      </div>
-    </div>
+        <section class="controls-area">
+            
+            <div class="control-column left">
+                <div class="knob-wrapper">
+                    <label for="knob-pre">PRE</label>
+                    <div class="knob-container small">
+                        <div class="knob-body small-knob" id="knob-pre" data-param="pre">
+                            <div class="knob-indicator"></div>
+                        </div>
+                        <div class="tick-marks"></div>
+                    </div>
+                </div>
 
-    <div id="satclip-group" class="knob-group">
-      <div class="knob-label">SAT/CLIP</div>
-      <div class="knob-stack">
-        <div class="tick-ring"></div>
-        <div class="small-knob" data-param="satclip"></div>
-      </div>
-    </div>
-
-    <div id="mix-group" class="knob-group">
-      <div class="knob-label">MIX</div>
-      <div class="knob-stack">
-        <div class="tick-ring"></div>
-        <div class="small-knob" data-param="mix"></div>
-      </div>
-    </div>
-
-    <!-- Drive -->
-    <div class="drive-container">
-      <div class="drive-outer">
-        <div class="drive-ring"></div>
-        <div class="drive-knob" data-param="drive"></div>
-      </div>
-      <div id="drive-label">DRIVE</div>
-    </div>
-
-    <!-- LED (POWER) -->
-    <div class="led-container">
-      <div class="led" data-param="os2x" aria-label="Power / OS 2X"></div>
-    </div>
-
-    <!-- Output Ceiling -->
-    <div class="output-container">
-      <div class="mini2x" data-param="os2x" aria-label="2X Toggle"></div>
-      <div class="mini2x-label" data-param="os2x">2X</div>
-
-      <div class="slider-track" data-param="ceiling">
-        <div class="slider-thumb" data-param="ceiling"></div>
-      </div>
-
-      <div class="tiny-hole"></div>
-      <div class="output-label">OUTPUT CEILING</div>
-    </div>
-
-    <!-- Bottom Line -->
-    <div class="bottom-line"></div>
-        <!-- Credit / Info -->
-    <button class="info-btn" id="creditBtn" type="button" aria-label="Credits">
-      i
-    </button>
-        <!-- Credits Modal -->
-    <div class="modal-backdrop" id="creditModal" aria-hidden="true">
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="creditTitle">
-        <div class="modal-head">
-          <div class="modal-title" id="creditTitle">CREDITS</div>
-          <button class="modal-close" id="creditClose" type="button" aria-label="Close">×</button>
-        </div>
-
-        <div class="modal-body">
-          <div class="credit-lines">
-            <div class="credit-row">
-              <span class="credit-k">Plugin</span>
-              <span class="credit-v">AURIC Z-CLIP</span>
-            </div>
-            <div class="credit-row">
-              <span class="credit-k">Version</span>
-              <span class="credit-v">v1.0</span>
-            </div>
-            <div class="credit-row">
-              <span class="credit-k">UI</span>
-              <span class="credit-v">Matte Magenta / Brushed Metal</span>
+                <div class="knob-wrapper">
+                    <label for="knob-trim">TRIM</label>
+                    <div class="knob-container small">
+                        <div class="knob-body small-knob" id="knob-trim" data-param="trim">
+                            <div class="knob-indicator"></div>
+                        </div>
+                        <div class="tick-marks"></div>
+                    </div>
+                </div>
             </div>
 
-            <div class="credit-divider"></div>
-
-            <div class="credit-note">
-              Edit teks credit ini sesuai kebutuhan kamu.
+            <div class="control-column center">
+                <div class="big-knob-wrapper">
+                    <div class="glow-ring"></div>
+                    
+                    <div class="knob-container large">
+                        <div class="knob-body drive-knob" id="knob-drive" data-param="drive">
+                            <div class="knob-face"></div> </div>
+                    </div>
+                </div>
+                <h2 class="label-large">DRIVE</h2>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
+            <div class="control-column right">
+                <div class="knob-wrapper">
+                    <label for="knob-sat">SAT/CLIP</label>
+                    <div class="knob-container small">
+                        <div class="knob-body small-knob" id="knob-sat" data-param="satclip">
+                            <div class="knob-indicator"></div>
+                        </div>
+                        <div class="tick-marks"></div>
+                    </div>
+                </div>
 
-  </div>
+                <div class="knob-wrapper">
+                    <label for="knob-mix">MIX</label>
+                    <div class="knob-container small">
+                        <div class="knob-body small-knob" id="knob-mix" data-param="mix">
+                            <div class="knob-indicator"></div>
+                        </div>
+                        <div class="tick-marks"></div>
+                    </div>
+                </div>
+            </div>
 
-  <script src="app.js"></script>
+        </section>
+
+        <footer class="plugin-footer">
+            
+            <div class="footer-section left">
+                <div class="indicator-light led" data-param="power">
+                    <div class="light-bulb"></div>
+                </div>
+            </div>
+
+            <div class="footer-section center">
+                <div class="switch-group">
+                    <div class="button-wrapper">
+                        <button class="btn-round" id="btn-2x" type="button"></button>
+                        <span class="btn-label">2X</span>
+                    </div>
+                    
+                    <div class="toggle-switch-container slider-track">
+                        <input type="checkbox" id="mode-toggle" class="toggle-checkbox">
+                        <label for="mode-toggle" class="toggle-slider slider-thumb"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-section right">
+                <div class="output-wrapper">
+                    <span class="text-label">OUTPUT CEILING</span>
+                    <div class="small-screw"></div>
+                </div>
+            </div>
+
+        </footer>
+
+        <div class="bottom-ambient-glow"></div>
+
+    </main>
+
+    <script src="app.js"></script>
+
 </body>
 </html>

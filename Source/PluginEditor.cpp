@@ -37,7 +37,7 @@ namespace
     }
 
     // parameter ids yang dipush ke UI
-    static constexpr size_t kNumParams = 7;
+    static constexpr size_t kNumParams = 8;
     static constexpr std::array<const char*, kNumParams> kParamIds =
     {{
         "pre",
@@ -46,8 +46,12 @@ namespace
         "mix",
         "drive",
         "ceiling",
+        "power",
         "os2x"
     }};
+
+    constexpr int kDefaultUIWidth  = 860;
+    constexpr int kDefaultUIHeight = 680;
 
     // Buat WebBrowserComponent::Options (JUCE 7/8).
     static juce::WebBrowserComponent::Options makeWebOptions (AuricClipperWebViewAudioProcessor& processor)
@@ -139,7 +143,7 @@ AuricClipperWebViewAudioProcessorEditor::AuricClipperWebViewAudioProcessorEditor
     web.goToURL (fileUrl.toString (true));
 
     startTimerHz (30);
-    setSize (1024, 683);
+    setSize (kDefaultUIWidth, kDefaultUIHeight);
 }
 
 AuricClipperWebViewAudioProcessorEditor::~AuricClipperWebViewAudioProcessorEditor()
@@ -158,6 +162,21 @@ void AuricClipperWebViewAudioProcessorEditor::paint (juce::Graphics& g)
 void AuricClipperWebViewAudioProcessorEditor::resized()
 {
     web.setBounds (getLocalBounds());
+}
+
+void AuricClipperWebViewAudioProcessorEditor::applyUISizeFromWeb (int width, int height)
+{
+    if (width <= 0 || height <= 0)
+        return;
+
+    const int w = juce::jlimit (200, 4096, width);
+    const int h = juce::jlimit (200, 4096, height);
+
+    if (lastUISize.x == w && lastUISize.y == h)
+        return;
+
+    lastUISize = { w, h };
+    setSize (w, h);
 }
 
 //==============================================================================
