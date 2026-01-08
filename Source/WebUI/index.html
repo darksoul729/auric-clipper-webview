@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AURIC Z-CLIP</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="panel">
+    <div class="grain"></div>
+
+    <!-- Screws -->
+    <div class="screw top-left"></div>
+    <div class="screw top-right"></div>
+    <div class="screw bottom-left"></div>
+    <div class="screw bottom-right"></div>
+
+    <!-- Header -->
+    <div id="auric" class="header">AURIC</div>
+    <div id="zclip" class="header">Z-CLIP</div>
+
+    <!-- Knobs -->
+    <div id="pre-group" class="knob-group">
+      <div class="knob-label">PRE</div>
+      <div class="knob-stack">
+        <div class="tick-ring"></div>
+        <div class="small-knob" data-param="pre"></div>
+      </div>
+    </div>
+
+    <div id="trim-group" class="knob-group">
+      <div class="knob-label">TRIM</div>
+      <div class="knob-stack">
+        <div class="tick-ring"></div>
+        <div class="small-knob" data-param="trim"></div>
+      </div>
+    </div>
+
+    <div id="satclip-group" class="knob-group">
+      <div class="knob-label">SAT/CLIP</div>
+      <div class="knob-stack">
+        <div class="tick-ring"></div>
+        <div class="small-knob" data-param="satclip"></div>
+      </div>
+    </div>
+
+    <div id="mix-group" class="knob-group">
+      <div class="knob-label">MIX</div>
+      <div class="knob-stack">
+        <div class="tick-ring"></div>
+        <div class="small-knob" data-param="mix"></div>
+      </div>
+    </div>
+
+    <!-- Drive -->
+    <div class="drive-container">
+      <div class="drive-outer">
+        <div class="drive-ring"></div>
+        <div class="drive-knob" data-param="drive"></div>
+      </div>
+      <div id="drive-label">DRIVE</div>
+    </div>
+
+    <!-- LED (POWER) -->
+    <div class="led-container">
+      <div class="led" data-param="os2x" aria-label="Power / OS 2X"></div>
+    </div>
+
+    <!-- Output Ceiling -->
+    <div class="output-container">
+      <div class="mini2x" data-param="os2x" aria-label="2X Toggle"></div>
+      <div class="mini2x-label" data-param="os2x">2X</div>
+
+      <div class="slider-track" data-param="ceiling">
+        <div class="slider-thumb" data-param="ceiling"></div>
+      </div>
+
+      <div class="tiny-hole"></div>
+      <div class="output-label">OUTPUT CEILING</div>
+    </div>
+
+    <!-- Bottom Line -->
+    <div class="bottom-line"></div>
+        <!-- Credit / Info -->
+    <button class="info-btn" id="creditBtn" type="button" aria-label="Credits">
+      i
+    </button>
+        <!-- Credits Modal -->
+    <div class="modal-backdrop" id="creditModal" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="creditTitle">
+        <div class="modal-head">
+          <div class="modal-title" id="creditTitle">CREDITS</div>
+          <button class="modal-close" id="creditClose" type="button" aria-label="Close">×</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="credit-lines">
+            <div class="credit-row">
+              <span class="credit-k">Plugin</span>
+              <span class="credit-v">AURIC Z-CLIP</span>
+            </div>
+            <div class="credit-row">
+              <span class="credit-k">Version</span>
+              <span class="credit-v">v1.0</span>
+            </div>
+            <div class="credit-row">
+              <span class="credit-k">UI</span>
+              <span class="credit-v">Matte Magenta / Brushed Metal</span>
+            </div>
+
+            <div class="credit-divider"></div>
+
+            <div class="credit-note">
+              Edit teks credit ini sesuai kebutuhan kamu.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
